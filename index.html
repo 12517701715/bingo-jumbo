@@ -1,0 +1,83 @@
+
+<div id='advertisement' class='advertisement' ></div>
+<html>
+	<head>
+		<title>Bingo/Jumbo</title>
+		<link rel='stylesheet' href='https://bootswatch.com/superhero/bootstrap.min.css' />
+		<style>
+			.inp { width:40px; text-align:center; margin-right:5px; margin-bottom:5px;}
+			.marked {
+				position:absolute;
+				top:0;
+				left:8px;
+				right:0;
+				bottom:0;
+				width:45px;
+				height:45px;
+				text-align:center;
+				font-size:18px;
+				color:black;
+			}
+			td { position:relative; }
+		</style>
+	</head>
+	<body>
+		<select id='type' class='form-control'  ><option selected value="" >Select Type</option><option value='num' >Numbers(1-25)</option><option value='alpha' >Alphabets(A-Y)</option></select>
+		<table align='center' id='mtbl' ></table>
+		<input type='button' value='Start' id='startgame' class='btn btn-danger' /> 
+		<input type='button' class='btn btn-info' value='Reset' id='reset' /> 
+		<input type='button' value='Randomize' id='randomize' class='btn btn-primary' />
+		<br>
+		<div class='row' style='max-width:90%;' >
+			<label for='mark_num' class='col-sm-2' style='text-align:center;' >Mark Number/Aplha</label>
+			<div class='col-sm-9' >
+				<input type='text' class='form-control ' id='mark_num' />
+			</div>
+			<div class='col-sm-1' >
+				<input type='button' id='mark_num_btn' value='Mark' class='btn btn-danger' />
+			</div>
+		</div>
+	</body>
+</html>
+<script src='https://code.jquery.com/jquery.min.js'></script>
+<script>
+	var len = 25 , types = { "num" : 1 , "alpha" : "A" } , gen = function () {
+		var t = $("#type").val() , typ = types[t] || types.num , avail = [] , p;
+		$(".marked").remove();
+		for(var i=0;i<len;i++)
+			avail.push( typ == 'A' ? String.fromCharCode( typ.charCodeAt(0) + i) : typ + i );
+		
+		for(var i=0;i<len;i++) {
+			p = getRand(avail);
+			tbl.find("[data-pos='" + i + "']").attr("data-val" , avail[p]).val(avail[p]).html(avail[p]);
+			avail.splice(p,1);
+		}
+	},
+	getRand = function (ar) {
+		if(ar.length <= 1) return 0;
+		
+		var n = Math.floor( Math.random() * (ar.length-1) );
+		return typeof ar[n] != 'undefined' ? n : getRand(ar);
+	},
+	mark = function () {
+		var m = $("#mark_num").val();
+		
+		$("[data-val='" + m + "']").parent().append("<span class='marked' >X</span>");
+	},
+	res = function () {
+		$(".marked").remove();
+		$("[data-pos]").val('').removeAttr("data-val");
+	},
+	tbl = $("#mtbl");
+	
+	for(var i=0,a=0;i<len/5;i++) {
+		var row = $(document.createElement("tr"));
+		for(var j=0;j<5;j++,a++)
+			row.append( "<td><input class='inp' data-pos='" + a + "' placeholder='" + (a+1) + "'/>" );
+		tbl.append(row);
+	}
+	
+	$("#mark_num_btn").click(mark);
+	$("#randomize").click(gen);
+	$("#reset").click(res);
+</script>
